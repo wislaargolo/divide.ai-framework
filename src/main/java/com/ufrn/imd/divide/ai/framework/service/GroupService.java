@@ -9,6 +9,7 @@ import com.ufrn.imd.divide.ai.framework.mapper.GroupMapper;
 import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
 import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
+import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
 import com.ufrn.imd.divide.ai.framework.util.AttributeUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -28,24 +29,28 @@ public abstract class GroupService<T extends Group,
     protected final GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper;
     protected final UserService userService;
     protected final UserValidationService userValidationService;
+    protected final GroupTransactionRepository groupTransactionRepository;
 
     protected GroupService(GroupRepository<T> groupRepository,
                            GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper,
                            UserService userService,
                            DebtService debtService,
-                           UserValidationService userValidationService) {
+                           UserValidationService userValidationService, GroupTransactionRepository groupTransactionRepository) {
         super(groupRepository, userService, debtService, userValidationService);
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.userService = userService;
         this.userValidationService = userValidationService;
+        this.groupTransactionRepository = groupTransactionRepository;
     }
 
 
+    @Transactional
     public void delete(Long groupId) {
         T group = findByIdIfExists(groupId);
         userValidationService.validateUser(group.getCreatedBy().getId(),
                 "Apenas o dono do grupo pode removê-lo.");
+        groupTransactionRepository.deleteAllByGroup(group);
         groupRepository.delete(group);
     }
 

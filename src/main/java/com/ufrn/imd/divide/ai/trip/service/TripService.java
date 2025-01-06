@@ -1,5 +1,6 @@
 package com.ufrn.imd.divide.ai.trip.service;
 
+import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
 import com.ufrn.imd.divide.ai.framework.service.DebtService;
 import com.ufrn.imd.divide.ai.framework.service.GroupService;
 import com.ufrn.imd.divide.ai.framework.service.UserService;
@@ -25,8 +26,9 @@ public class TripService extends GroupService<Trip, TripCreateRequestDTO, TripUp
 
     public TripService(TripRepository tripRepository, TripMapper tripMapper,
                        @Lazy UserService userService, DebtService debtService,
-                       UserValidationService userValidationService) {
-        super(tripRepository, tripMapper, userService, debtService, userValidationService);
+                       UserValidationService userValidationService,
+                       GroupTransactionRepository groupTransactionRepository) {
+        super(tripRepository, tripMapper, userService, debtService, userValidationService, groupTransactionRepository);
         this.tripRepository = tripRepository;
     }
 

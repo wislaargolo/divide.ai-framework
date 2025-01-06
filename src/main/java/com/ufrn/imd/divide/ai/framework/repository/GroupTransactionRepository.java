@@ -1,5 +1,6 @@
 package com.ufrn.imd.divide.ai.framework.repository;
 
+import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.GroupTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,5 @@ public interface GroupTransactionRepository extends JpaRepository<GroupTransacti
   // List<GroupTransaction> findByGroupIdAndActiveTrue(Long groupId);
   List<GroupTransaction> findByGroupId(Long groupId);
   List<GroupTransaction> findByDueDate(LocalDate dueDate);
+  void deleteAllByGroup(Group group);
 }

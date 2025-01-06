@@ -26,7 +26,7 @@ public class DebtMapper {
 
     public Debt toEntity(DebtUpdateRequestDTO dto) {
         Debt debt = new Debt();
-        debt.setUser(new User(dto.id()));
+        debt.setId(dto.id());
         debt.setAmount(dto.amount());
         return debt;
     }
@@ -42,7 +42,7 @@ public class DebtMapper {
                         debt.getUser().getFirstName(), debt.getUser().getLastName(),
                         debt.getUser().getPhoneNumber()),
                 Date.from(debt.getCreatedAt().toInstant( ZoneOffset.UTC )),
-                Date.from(debt.getPaidAt().toInstant( ZoneOffset.UTC ))
+                debt.getPaidAt() != null ? Date.from(debt.getPaidAt().toInstant( ZoneOffset.UTC )) : null
         );
     }
 
