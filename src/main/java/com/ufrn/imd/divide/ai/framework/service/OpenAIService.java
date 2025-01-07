@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class OpenAIService<DTO> {
+public abstract class OpenAIService {
     protected OpenAIClient openAIClient;
     protected ChatMapper chatMapper;
     protected OpenAIRepository openAIRepository;

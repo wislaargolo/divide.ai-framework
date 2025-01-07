@@ -1,5 +1,6 @@
 package com.ufrn.imd.divide.ai.framework.service;
 
+import com.ufrn.imd.divide.ai.framework.closure.GroupClosureStrategy;
 import com.ufrn.imd.divide.ai.framework.dto.request.GroupCreateRequestDTO;
 import com.ufrn.imd.divide.ai.framework.dto.request.GroupUpdateRequestDTO;
 import com.ufrn.imd.divide.ai.framework.dto.request.JoinGroupRequestDTO;
@@ -31,6 +32,7 @@ public abstract class GroupService<T extends Group,
     protected final GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper;
     protected final UserService userService;
     protected final UserValidationService userValidationService;
+    protected final GroupTransactionRepository groupTransactionRepository;
     protected final GroupClosureStrategy<T> groupClosureStrategy;
 
     protected GroupService(GroupRepository<T> groupRepository,
@@ -38,12 +40,14 @@ public abstract class GroupService<T extends Group,
                            UserService userService,
                            DebtService debtService,
                            UserValidationService userValidationService,
+                           GroupTransactionRepository groupTransactionRepository,
                            GroupClosureStrategy<T> groupClosureStrategy) {
         super(groupRepository, userService, debtService, userValidationService);
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.userService = userService;
         this.userValidationService = userValidationService;
+        this.groupTransactionRepository = groupTransactionRepository;
         this.groupClosureStrategy = groupClosureStrategy;
     }
 
@@ -61,8 +65,10 @@ public abstract class GroupService<T extends Group,
     @Transactional
     public void delete(Long groupId) {
         T group = findByIdIfExists(groupId);
+
         userValidationService.validateUser(group.getCreatedBy().getId(),
                 "Apenas o dono do grupo pode removê-lo.");
+
         groupTransactionRepository.deleteAllByGroup(group);
         groupRepository.delete(group);
     }
@@ -100,9 +106,6 @@ public abstract class GroupService<T extends Group,
         userValidationService.validateUser(createdBy);
     }
 
-    public abstract void validateBeforeSave(T group);
-
-
     public List<ResponseDTO> findAllByUserId(Long userId) {
         userService.findById(userId);
         List<T> groups = groupRepository.findByMembersId(userId);
@@ -118,7 +121,7 @@ public abstract class GroupService<T extends Group,
         return groupMapper.toDto(group);
     }
     
-    public List<Group> getAllGroups() {
+    public List<T> getAllGroups() {
         return groupRepository.findAll();
     }
 
@@ -136,7 +139,7 @@ public abstract class GroupService<T extends Group,
     public ResponseDTO deleteMember(Long groupId, Long userId) {
         T group = findByIdIfExists(groupId);
         User user = userService.findById(userId);
-        validateBeforeDelete(group, user);
+        validateBeforeDeleteMember(group, user);
 
         group.getMembers().remove(user);
         return groupMapper.toDto(groupRepository.save(group));
@@ -151,7 +154,9 @@ public abstract class GroupService<T extends Group,
         return groupMapper.toDto(groupRepository.save(group));
     }
 
-    private void validateBeforeJoin(T group, User user) {
+    protected abstract void validateBeforeSave(T group);
+
+    protected void validateBeforeJoin(T group, User user) {
         if(group.isDiscontinued()) {
             throw new BusinessException(
                     "O grupo não aceita mais membros, foi descontinuado.",
@@ -168,7 +173,7 @@ public abstract class GroupService<T extends Group,
 
     }
 
-    private void validateBeforeDelete(T group, User user) {
+    protected void validateBeforeDeleteMember(T group, User user) {
         userValidationService.validateUser(
                 group.getCreatedBy().getId(),
                 "Apenas o dono do grupo pode remover um membro.");
@@ -176,18 +181,18 @@ public abstract class GroupService<T extends Group,
         validateUserRemoval(group, user);
     }
 
-    private void validateBeforeLeave(T group, User user) {
+    protected void validateBeforeLeave(T group, User user) {
         userValidationService.validateUser(user.getId());
         validateUserRemoval(group, user);
     }
 
-    private void validateUserRemoval(T group, User user) {
-        validateGroupOwner(group, user);
+    protected void validateUserRemoval(T group, User user) {
         validateUserMemberOfGroup(group, user);
+        validateGroupOwner(group, user);
         debtService.validateUserDebts(group, user);
     }
 
-    private void validateGroupOwner(T group, User user) {
+    protected void validateGroupOwner(T group, User user) {
         if (group.getCreatedBy().equals(user)) {
             throw new BusinessException(
                     "O proprietário do grupo não pode sair ou ser removido. " +
@@ -197,7 +202,7 @@ public abstract class GroupService<T extends Group,
         }
     }
 
-    private void validateUserMemberOfGroup(T group, User user) {
+    protected void validateUserMemberOfGroup(T group, User user) {
         if (!group.getMembers().contains(user)) {
             throw new BusinessException(
                     "O usuário não faz parte deste grupo.",
@@ -206,7 +211,7 @@ public abstract class GroupService<T extends Group,
         }
     }
 
-    private String generateUniqueCode() {
+    protected String generateUniqueCode() {
         String code;
         do {
             String uuid = UUID.randomUUID().toString();

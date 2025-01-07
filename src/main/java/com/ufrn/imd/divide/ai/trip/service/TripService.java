@@ -1,5 +1,6 @@
 package com.ufrn.imd.divide.ai.trip.service;
 
+import com.ufrn.imd.divide.ai.framework.model.User;
 import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
 import com.ufrn.imd.divide.ai.framework.service.DebtService;
 import com.ufrn.imd.divide.ai.framework.service.GroupService;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -28,13 +30,14 @@ public class TripService extends GroupService<Trip, TripCreateRequestDTO, TripUp
     public TripService(TripRepository tripRepository, TripMapper tripMapper,
                        @Lazy UserService userService, DebtService debtService,
                        UserValidationService userValidationService,
-                       GroupTransactionRepository groupTransactionRepository) {
-        super(tripRepository, tripMapper, userService, debtService, userValidationService, groupTransactionRepository);
+                       GroupTransactionRepository groupTransactionRepository,
+                       DateEndStrategy dateEndStrategy) {
+        super(tripRepository, tripMapper, userService, debtService, userValidationService, groupTransactionRepository, dateEndStrategy);
         this.tripRepository = tripRepository;
     }
 
     @Override
-    public void validateBeforeSave(Trip group) {
+    protected void validateBeforeSave(Trip group) {
         validateDate(group);
         validateTrip(group);
     }
