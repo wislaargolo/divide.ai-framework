@@ -13,6 +13,8 @@ import com.ufrn.imd.divide.ai.framework.util.AttributeUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,19 +30,31 @@ public abstract class GroupService<T extends Group,
     protected final GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper;
     protected final UserService userService;
     protected final UserValidationService userValidationService;
+    protected final GroupClosureStrategy<T> groupClosureStrategy;
 
     protected GroupService(GroupRepository<T> groupRepository,
                            GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper,
                            UserService userService,
                            DebtService debtService,
-                           UserValidationService userValidationService) {
+                           UserValidationService userValidationService,
+                           GroupClosureStrategy<T> groupClosureStrategy) {
         super(groupRepository, userService, debtService, userValidationService);
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.userService = userService;
         this.userValidationService = userValidationService;
+        this.groupClosureStrategy = groupClosureStrategy;
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void checkDeleteGroup() {
+        List<T> groups = groupRepository.findAll();
+        for (T group : groups) {
+            if (groupClosureStrategy.shouldCloseGroup(group)){
+                groupRepository.delete(group);
+            }
+        }
+    }
 
     public void delete(Long groupId) {
         T group = findByIdIfExists(groupId);
@@ -99,7 +113,10 @@ public abstract class GroupService<T extends Group,
         T group = findByIdIfExists(groupId);
         return groupMapper.toDto(group);
     }
-
+    
+    public List<Group> getAllGroups() {
+        return groupRepository.findAll();
+    }
 
     public ResponseDTO joinGroupByCode(JoinGroupRequestDTO dto) {
         T group = findByCodeIfExists(dto.code());

@@ -11,6 +11,7 @@ import com.ufrn.imd.divide.ai.framework.exception.BusinessException;
 import com.ufrn.imd.divide.ai.trip.mapper.TripMapper;
 import com.ufrn.imd.divide.ai.trip.model.Trip;
 import com.ufrn.imd.divide.ai.trip.repository.TripRepository;
+import com.ufrn.imd.divide.ai.trip.closure.DateEndStrategy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,9 @@ public class TripService extends GroupService<Trip, TripCreateRequestDTO, TripUp
 
     public TripService(TripRepository tripRepository, TripMapper tripMapper,
                        @Lazy UserService userService, DebtService debtService,
-                       UserValidationService userValidationService) {
-        super(tripRepository, tripMapper, userService, debtService, userValidationService);
+                       UserValidationService userValidationService,
+                       DateEndStrategy dateEndStrategy) {
+        super(tripRepository, tripMapper, userService, debtService, userValidationService, dateEndStrategy);
         this.tripRepository = tripRepository;
     }
 
