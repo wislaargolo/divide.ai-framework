@@ -120,10 +120,6 @@ public abstract class GroupService<T extends Group,
         T group = findByIdIfExists(groupId);
         return groupMapper.toDto(group);
     }
-    
-    public List<T> getAllGroups() {
-        return groupRepository.findAll();
-    }
 
     public ResponseDTO joinGroupByCode(JoinGroupRequestDTO dto) {
         T group = findByCodeIfExists(dto.code());
