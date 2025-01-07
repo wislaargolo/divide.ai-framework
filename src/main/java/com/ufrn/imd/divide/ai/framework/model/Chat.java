@@ -19,6 +19,10 @@ public class Chat {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
+
     @Column(name = "prompt", columnDefinition = "TEXT")
     private String prompt;
 
@@ -51,6 +55,14 @@ public class Chat {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public String getPrompt() {

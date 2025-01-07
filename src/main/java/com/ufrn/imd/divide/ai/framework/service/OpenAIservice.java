@@ -5,84 +5,69 @@ import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ufrn.imd.divide.ai.framework.dto.request.OpenAIRequestDTO;
-import com.ufrn.imd.divide.ai.framework.dto.response.CategoryResponseDTO;
+import com.ufrn.imd.divide.ai.framework.dto.response.ChatResponseDTO;
+import com.ufrn.imd.divide.ai.framework.dto.response.ConfigOpenAIResponseDTO;
 import com.ufrn.imd.divide.ai.framework.dto.response.OpenAIResponseDTO;
-import com.ufrn.imd.divide.ai.framework.dto.response.UserTransactionResponseDTO;
 import com.ufrn.imd.divide.ai.framework.exception.BusinessException;
 import com.ufrn.imd.divide.ai.framework.mapper.ChatMapper;
 import com.ufrn.imd.divide.ai.framework.model.Chat;
+import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
 import com.ufrn.imd.divide.ai.framework.repository.OpenAIRepository;
 import com.ufrn.imd.divide.ai.framework.util.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class OpenAIservice {
-    private OpenAIClient openAIClient;
-    private final ChatMapper chatMapper;
-    private OpenAIRepository openAIRepository;
-    private final UserService userService;
-    private final UserTransactionService userTransactionService;
-    private final CategoryService categoryService;
+public abstract class OpenAIService<DTO> {
+    protected OpenAIClient openAIClient;
+    protected ChatMapper chatMapper;
+    protected OpenAIRepository openAIRepository;
+
     private final UserValidationService userValidationService;
+    private final UserService userService;
+    private final GenericGroupService<Group> groupService;
+
+    protected String SYSTEM_PROMPT_FILE_PATH = "prompt/SystemPrompt.txt";
 
     @Value("${openai.model}")
-    private String model;
+    protected String model;
 
     @Value("${openai.temperature}")
-    private Double temperature;
+    protected Double temperature;
 
-    private static final String SYSTEM_PROMPT_FILE_PATH = "prompt/SystemPrompt.txt";
-
-    private final Logger logger = LoggerFactory.getLogger(OpenAIservice.class);
-
-    public OpenAIservice(OpenAIClient openAIClient,
-                         ChatMapper chatMapper,
-                         OpenAIRepository openAIRepository,
-                         UserService userService,
-                         UserTransactionService userTransactionService,
-                         CategoryService categoryService,
-                         UserValidationService userValidationService) {
+    public OpenAIService(OpenAIClient openAIClient, ChatMapper chatMapper, OpenAIRepository openAIRepository,
+                         UserValidationService userValidationService, UserService userService,
+                         GenericGroupService<Group> groupService)
+    {
         this.openAIClient = openAIClient;
         this.chatMapper = chatMapper;
         this.openAIRepository = openAIRepository;
-        this.userService = userService;
-        this.userTransactionService = userTransactionService;
-        this.categoryService = categoryService;
         this.userValidationService = userValidationService;
+        this.userService = userService;
+        this.groupService = groupService;
     }
 
     public OpenAIResponseDTO chatCompletion(OpenAIRequestDTO chatRequestDTO) throws Exception {
         Long userId = chatRequestDTO.userId();
-        String userPrompt = chatRequestDTO.prompt();
+        Long groupId = chatRequestDTO.groupId();
 
         userValidationService.validateUser(userId);
         User user = userService.findById(userId);
 
-        String objectivePrompt = buildUserObjectivePrompt(userPrompt);
-        String transactionPrompt = buildUserTransactionPrompt(userId);
-        String categoriesTransactionPrompt = buildUserCategoriesTransactionPrompt(userId);
+        Group group = groupService.findByIdIfExists(groupId);
 
-        String prompt = objectivePrompt + "\n" + transactionPrompt + "\n" + categoriesTransactionPrompt;
-
-        // logger.info("Prompt: " + prompt);
+        String prompt = buildPrompt(chatRequestDTO);
 
         List<ChatRequestMessage> chatMessages = buildChatMessages(prompt);
 
         ChatCompletionsOptions options = new ChatCompletionsOptions(chatMessages)
-                .setTemperature(temperature);
+                .setTemperature(getConfig().temperature());
 
-        var chatCompletionResponse = openAIClient.getChatCompletions(model, options);
+        var chatCompletionResponse = openAIClient.getChatCompletions(getConfig().model(), options);
 
         if (chatCompletionResponse.getChoices().isEmpty() || chatCompletionResponse.getChoices().get(0).getMessage().getContent().isEmpty())
             throw new BusinessException("Empty response from OpenAI", HttpStatus.BAD_REQUEST);
@@ -90,96 +75,57 @@ public class OpenAIservice {
         String chatResponse = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
         String chatId = chatCompletionResponse.getId();
 
-        // logger.info("chatResponse: " + chatResponse);
+        saveChat(chatRequestDTO, user, group, chatResponse, chatId);
 
-        OpenAIResponseDTO responseDTO = parseChatResponseToJSON(chatResponse);
-
-        Chat chat = chatMapper.toEntity(chatRequestDTO);
-        chat.setUser(user);
-        chat.setResponse(chatResponse);
-        chat.setChatId(chatId);
-
-        openAIRepository.save(chat);
-
-        return responseDTO;
+        return new OpenAIResponseDTO(chatResponse);
     }
 
-    private List<ChatRequestMessage> buildChatMessages(String prompt) throws Exception {
+    protected List<ChatRequestMessage> buildChatMessages(String prompt) throws Exception {
         List<ChatRequestMessage> chatMessages = new ArrayList<>();
-
-        String systemPromptTemplate = FileUtils.readSystemPromptFile(SYSTEM_PROMPT_FILE_PATH);
-
+        String systemPromptTemplate = FileUtils.readSystemPromptFile(getConfig().systemPromptPath());
         chatMessages.add(new ChatRequestSystemMessage(systemPromptTemplate));
         chatMessages.add(new ChatRequestUserMessage(prompt));
-
         return chatMessages;
     }
 
-    private String buildUserObjectivePrompt(String prompt) {
-        if (prompt == null || prompt.isEmpty()) {
-            return "";
-        }
-        return String.format("Meu objetivo é: %s\n", prompt);
+    private void saveChat(OpenAIRequestDTO chatRequestDTO, User user, Group group, String chatResponse, String chatId) {
+        Chat chat = chatMapper.toEntity(chatRequestDTO);
+        chat.setUser(user);
+        chat.setGroup(group);
+        chat.setResponse(chatResponse);
+        chat.setChatId(chatId);
+        openAIRepository.save(chat);
     }
 
-    private String buildUserTransactionPrompt(Long userId) {
-        try {
-            List<UserTransactionResponseDTO> userTransactions = userTransactionService.findAllByUserId(userId);
+    protected abstract String buildPrompt(OpenAIRequestDTO chatRequestDTO) throws Exception;
 
-            if (userTransactions == null || userTransactions.isEmpty()) {
-                return "Lista de transações: []\n";
-            }
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-
-            String userTransactionsJson = objectMapper.writeValueAsString(userTransactions);
-
-            return String.format("Lista de transações: \n%s", userTransactionsJson);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BusinessException("Erro ao construir a lista de transações.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private String buildUserCategoriesTransactionPrompt(Long userId) {
-        try {
-            List<CategoryResponseDTO> categories = categoryService.getCategoriesByUserId(userId);
-
-            if (categories == null || categories.isEmpty()) {
-                return "Lista de categorias: []\n";
-            }
-            ObjectMapper objectMapper = new ObjectMapper();
-            String categoriesJson = objectMapper.writeValueAsString(categories);
-
-            return String.format("Lista de categorias: \n%s", categoriesJson);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BusinessException("Erro ao construir a lista de categorias.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private OpenAIResponseDTO parseChatResponseToJSON(String chatResponse) {
-        String cleanedResponse = chatResponse.replaceAll("```json|```", "").trim();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            return objectMapper.readValue(cleanedResponse, OpenAIResponseDTO.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BusinessException("Erro ao parsear resposta da LLM para JSON.", HttpStatus.BAD_REQUEST);
-        }
+    protected ConfigOpenAIResponseDTO getConfig() {
+        return new ConfigOpenAIResponseDTO(
+                model, temperature, SYSTEM_PROMPT_FILE_PATH);
     }
 
     public OpenAIResponseDTO getLastChat(Long userId) {
         Chat lastChat = openAIRepository.findTopByUserIdOrderByCreatedAtDesc(userId);
 
-        if (lastChat == null) return null;
-
-        OpenAIResponseDTO lastChatResponse = parseChatResponseToJSON(lastChat.getResponse());
-
-        return lastChatResponse;
+        return chatMapper.toDto(lastChat);
     }
 
+    public ChatResponseDTO getLastChatByUserIdAndGroupId(Long userId, Long chatId) {
+        Chat lastChat = openAIRepository.findTopByUserIdAndGroupIdOrderByCreatedAtDesc(userId, chatId);
+
+        return chatMapper.toChatResponseDTO(lastChat);
+    }
+
+//    private OpenAIResponseDTO parseChatResponseToJSON(String chatResponse) {
+//        String cleanedResponse = chatResponse.replaceAll("```json|```", "").trim();
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        try {
+//            return objectMapper.readValue(cleanedResponse, OpenAIResponseDTO.class);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new BusinessException("Erro ao parsear resposta da LLM para JSON.", HttpStatus.BAD_REQUEST);
+//        }
+//    }
 }

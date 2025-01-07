@@ -1,0 +1,54 @@
+Estou organizando uma viagem e preciso da sua ajuda.
+
+Detalhes da viagem:
+- Destino: {destination}
+- Data de início: {startDate}
+- Data de término: {finalOccurrenceDate}
+- Número de participantes: {numberOfParticipants}
+
+Por favor, sugira um roteiro de viagem considerando o destino, as datas fornecidas e o número de participantes. Inclua:
+1. Atividades recomendadas e lugares para visitar.
+2. Opções de hospedagem adequadas para {numberOfParticipants} pessoas.
+3. Dicas de restaurantes e alimentação local.
+4. Sugestões de transporte no destino para {numberOfParticipants} pessoas.
+
+Além disso, estime possíveis gastos diários em reais (R$) para cada categoria:
+- **Hospedagem**: Preço médio de hotéis, pousadas ou aluguel de temporada para {numberOfParticipants} pessoas.
+- **Alimentação**: Custos médios por refeição (café da manhã, almoço e jantar) por pessoa e para o grupo inteiro.
+- **Transporte local**: Custos com transporte público, táxis ou aluguel de veículos para o grupo.
+- **Atividades e passeios turísticos**: Inclua os valores estimados de entradas, guias ou serviços relacionados para o grupo.
+
+Certifique-se de que o roteiro não precise ser detalhado, mas sim, realista e inclua um resumo total estimado de gastos no final para o grupo e por pessoa.
+
+# Estrutura JSON de sua Resposta obrigatória:
+Responda seguindo a estrutura JSON abaixo:
+```
+{
+  "title": [titulo da viagem (type string)],
+  "recomendations": [Lista de Atividades Recomendadas e Lugares para Visitar (type string)],
+  "hosting": [
+    {
+      "hotel": [nome do hotel (type string)],
+      "pricePerNight": [preço por noite (type string)],
+      "numberOfParticipants": [número de participantes (type int)]
+    }
+  ],
+  "restaurants": [Lista de restaurantes],
+  "dailyExpenseEstimate": {
+    "accommodation": [Preço médio de hotéis, pousadas ou aluguel de temporada para {numberOfParticipants} pessoas (type string)],
+    "meals": [Custos médios por refeição (café da manhã, almoço e jantar) por pessoa e para o grupo inteiro (type string)],
+    "transportation": [Custos com transporte público, táxis ou aluguel de veículos para o grupo (type string)],
+    "activities": [Inclua os valores estimados de entradas, guias ou serviços relacionados para o grupo (type string)]
+  },
+  "totalExpenseEstimate": {
+    "totalDays": {
+      "accommodation": [Preço total de hospedagem (type string)],
+      "meals": [Preço total de refeições (type string)],
+      "transportation": [Preço total de transporte (type string)],
+      "activities": [Preço total de atividades (type string)]
+    },
+    "totalPerPerson": [Preço total por pessoa (type string)]
+  }
+}
+
+Agora siga rigorosamente esse passo a passo e não retorne nada fora do json!

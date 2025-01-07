@@ -1,6 +1,7 @@
 package com.ufrn.imd.divide.ai.framework.mapper;
 
 import com.ufrn.imd.divide.ai.framework.dto.request.OpenAIRequestDTO;
+import com.ufrn.imd.divide.ai.framework.dto.response.ChatResponseDTO;
 import com.ufrn.imd.divide.ai.framework.dto.response.OpenAIResponseDTO;
 import com.ufrn.imd.divide.ai.framework.model.Chat;
 import org.springframework.stereotype.Component;
@@ -34,12 +35,21 @@ public class ChatMapper {
         }
 
         return new OpenAIResponseDTO(
-                null,
-                null,
-                null,
-                null,
-                chat.getResponse(),
-                false
+            chat.getResponse()
+        );
+    }
+
+    public ChatResponseDTO toChatResponseDTO(Chat chat) {
+        if (chat == null) {
+            return null;
+        }
+
+        return new ChatResponseDTO(
+            chat.getPrompt(),
+            chat.getResponse(),
+            chat.getUser().getId(),
+            chat.getGroup().getId(),
+            chat.getCreatedAt()
         );
     }
 
