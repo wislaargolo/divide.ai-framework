@@ -5,6 +5,7 @@ import com.ufrn.imd.divide.ai.framework.repository.DebtRepository;
 import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,8 @@ public class SendEmailService {
     @Autowired
     private EmailService emailService;
 
+    @Value("${url.email}")
+    private String urlemail;
 
     public void sendPaymentReminders() {
         LocalDate today = LocalDate.now();
@@ -52,7 +55,7 @@ public class SendEmailService {
                 placeholders.put("days", String.valueOf(daysLeft)+" dias");
 
                 // Carregar o HTML do template e substituir os placeholders
-                String htmlContent = htmlTemplateService.loadHtmlTemplate("TemplateEmail.html", placeholders);
+                String htmlContent = htmlTemplateService.loadHtmlTemplate(urlemail, placeholders);
 
                 // Enviar o e-mail
                 if(debt.getPaidAt() == null){
@@ -98,7 +101,6 @@ public class SendEmailService {
 
     @PostConstruct
     public void init() {
-
         try {
             sendPaymentReminders(); // Envia os e-mails logo ao iniciar o projeto
         } catch (Exception e) {
