@@ -11,21 +11,11 @@ import java.time.LocalDate;
 @Table(name = "trips")
 public class Trip extends Group {
     @Column(nullable = false)
-    private LocalDate startDate;
-
-    @Column(nullable = false)
     private String destination;
 
     @Column(nullable = false)
     private LocalDate endDate;
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
 
     public String getDestination() {
         return destination;

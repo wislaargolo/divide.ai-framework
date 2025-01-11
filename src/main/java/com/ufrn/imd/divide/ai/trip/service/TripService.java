@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
+
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -43,25 +43,25 @@ public class TripService extends GroupService<Trip, TripCreateRequestDTO, TripUp
     }
 
     private void validateTrip(Trip trip) {
-        Optional<Trip> other = tripRepository.findByDestinationAndStartDateAndMembersContains(trip.getDestination(), trip.getStartDate(), trip.getCreatedBy());
+        Optional<Trip> other = tripRepository.findByDestinationAndOccurrenceDateAndMembersContains(trip.getDestination(), trip.getOccurrenceDate(), trip.getCreatedBy());
         if(other.isPresent() && (trip.getId() == null || !trip.getId().equals(other.get().getId()))) {
             throw new BusinessException(
                     "Já existe uma viagem com o destino " + trip.getDestination() +
-                            " e data de início " + trip.getStartDate() + " em que você é membro.",
+                            " e data de início " + trip.getOccurrenceDate() + " em que você é membro.",
                     HttpStatus.BAD_REQUEST
             );
         }
     }
 
     private void validateDate(Trip trip) {
-        if(trip.getStartDate().isBefore(LocalDate.now()))  {
+        if(trip.getOccurrenceDate().isBefore(LocalDate.now()))  {
             throw new BusinessException(
                     "A data de início de uma viagem não pode ser anterior ao momento atual.",
                     HttpStatus.BAD_REQUEST
             );
         }
 
-        if(trip.getEndDate().isBefore(trip.getStartDate()))  {
+        if(trip.getEndDate().isBefore(trip.getOccurrenceDate()))  {
             throw new BusinessException(
                     "A data de início de uma viagem não pode ser posterior à data final.",
                     HttpStatus.BAD_REQUEST

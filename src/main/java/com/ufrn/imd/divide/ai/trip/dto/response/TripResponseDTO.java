@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 public class TripResponseDTO extends GroupResponseDTO {
 
-    private LocalDate startDate;
     private String destination;
     private LocalDate endDate;
 
@@ -22,14 +21,6 @@ public class TripResponseDTO extends GroupResponseDTO {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
     }
 
     public String getDestination() {

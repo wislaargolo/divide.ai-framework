@@ -21,7 +21,6 @@ public class TripMapper extends GroupMapper<Trip, TripCreateRequestDTO, TripUpda
             return null;
         }
         Trip trip = mapCreateFields(new Trip(), groupCreateRequestDTO);
-        trip.setStartDate(groupCreateRequestDTO.getStartDate());
         trip.setDestination(groupCreateRequestDTO.getDestination());
         trip.setEndDate(groupCreateRequestDTO.getEndDate());
         return trip;
@@ -33,7 +32,6 @@ public class TripMapper extends GroupMapper<Trip, TripCreateRequestDTO, TripUpda
             return null;
         }
         Trip trip = mapUpdateFields(new Trip(), groupUpdateRequestDTO);
-        trip.setStartDate(groupUpdateRequestDTO.getStartDate());
         trip.setDestination(groupUpdateRequestDTO.getDestination());
         trip.setEndDate(groupUpdateRequestDTO.getEndDate());
         return trip;
@@ -46,7 +44,6 @@ public class TripMapper extends GroupMapper<Trip, TripCreateRequestDTO, TripUpda
             return null;
         }
         TripResponseDTO response = mapCommonGroupFields(group, new TripResponseDTO());
-        response.setStartDate(group.getStartDate());
         response.setDestination(group.getDestination());
         response.setEndDate(group.getEndDate());
         return response;

@@ -8,8 +8,6 @@ import java.time.LocalDate;
 
 public class TripCreateRequestDTO extends GroupCreateRequestDTO {
 
-    @NotNull(message = "startDate é obrigatório.")
-    private LocalDate startDate;
     @NotBlank(message = "destination é obrigatório.")
     private String destination;
     @NotNull(message = "endDate é obrigatório.")
@@ -21,14 +19,6 @@ public class TripCreateRequestDTO extends GroupCreateRequestDTO {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
     }
 
     public String getDestination() {

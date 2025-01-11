@@ -12,6 +12,8 @@ public class GroupCreateRequestDTO {
         String description;
         @NotNull(message = "createdBy é obrigatório.")
         private Long createdBy;
+        @NotNull(message = "occurrenceDate é obrigatório.")
+        private LocalDate occurrenceDate;
 
         public String getName() {
                 return name;
@@ -36,6 +38,12 @@ public class GroupCreateRequestDTO {
         public void setDescription(String description) {
                 this.description = description;
         }
+
+        public LocalDate getOccurrenceDate() {
+                return occurrenceDate;
+        }
+
+        public void setOccurrenceDate(LocalDate occurrenceDate) {this.occurrenceDate = occurrenceDate;}
 
 }
 

@@ -27,12 +27,14 @@ public abstract class GroupMapper<T extends Group, CRequestDTO extends GroupCrea
         group.setName(createDTO.getName());
         group.setDescription(createDTO.getDescription());
         group.setCreatedBy(new User(createDTO.getCreatedBy()));
+        group.setOccurrenceDate(createDTO.getOccurrenceDate());
         return group;
     }
 
     public T mapUpdateFields(T group, URequestDTO updateDTO) {
         group.setName(updateDTO.getName());
         group.setDescription(updateDTO.getDescription());
+        group.setOccurrenceDate(updateDTO.getOccurrenceDate());
         return group;
     }
 
@@ -44,6 +46,7 @@ public abstract class GroupMapper<T extends Group, CRequestDTO extends GroupCrea
         dto.setMembers(userMapper.toDtoList(group.getMembers()));
         dto.setCode(group.getCode());
         dto.setDiscontinued(group.isDiscontinued());
+        dto.setOccurrenceDate(group.getOccurrenceDate());
         return dto;
     }
 }

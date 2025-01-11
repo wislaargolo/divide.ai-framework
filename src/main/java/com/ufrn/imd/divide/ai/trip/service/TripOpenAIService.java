@@ -31,7 +31,7 @@ public class TripOpenAIService extends OpenAIService {
         Long groupId = chatRequestDTO.groupId();
         Trip group = tripService.findByIdIfExists(groupId);
 
-        LocalDate startDate = group.getStartDate();
+        LocalDate startDate = group.getOccurrenceDate();
         LocalDate finalOccurrenceDate = group.getEndDate();
 
         int numberOfParticipants = group.getMembers().size();

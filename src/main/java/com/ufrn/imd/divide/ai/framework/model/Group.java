@@ -31,6 +31,15 @@ public abstract class Group extends BaseEntity {
 
     private boolean discontinued = false;
 
+    private LocalDate occurrenceDate;
+
+    public LocalDate getOccurrenceDate() {
+        return occurrenceDate;
+    }
+
+    public void setOccurrenceDate(LocalDate occurrenceDate) {
+        this.occurrenceDate = occurrenceDate;
+    }
 
     public String getName() {
         return name;

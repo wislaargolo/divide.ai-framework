@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface TripRepository extends GroupRepository<Trip> {
-    Optional<Trip> findByDestinationAndStartDateAndMembersContains(String destination, LocalDate startDate, User user);
+    Optional<Trip> findByDestinationAndOccurrenceDateAndMembersContains(String destination, LocalDate startDate, User user);
 }

@@ -6,6 +6,7 @@ public class GroupUpdateRequestDTO {
 
     private String name;
     private String description;
+    private LocalDate occurrenceDate;
 
     public String getName() {
         return name;
@@ -23,4 +24,11 @@ public class GroupUpdateRequestDTO {
         this.description = description;
     }
 
+    public LocalDate getOccurrenceDate() {
+        return occurrenceDate;
+    }
+
+    public void setOccurrenceDate(LocalDate occurrenceDate) {
+        this.occurrenceDate = occurrenceDate;
+    }
 }
