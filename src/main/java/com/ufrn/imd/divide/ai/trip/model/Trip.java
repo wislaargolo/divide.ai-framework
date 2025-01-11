@@ -16,6 +16,9 @@ public class Trip extends Group {
     @Column(nullable = false)
     private String destination;
 
+    @Column(nullable = false)
+    private LocalDate endDate;
+
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -30,5 +33,13 @@ public class Trip extends Group {
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

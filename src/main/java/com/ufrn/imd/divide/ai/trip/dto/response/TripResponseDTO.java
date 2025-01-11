@@ -8,11 +8,20 @@ public class TripResponseDTO extends GroupResponseDTO {
 
     private LocalDate startDate;
     private String destination;
+    private LocalDate endDate;
 
     public TripResponseDTO() {}
 
     public TripResponseDTO(Long id, String name) {
         super(id, name);
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public LocalDate getStartDate() {

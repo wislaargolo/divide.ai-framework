@@ -32,9 +32,9 @@ public class TripOpenAIService extends OpenAIService {
         Trip group = tripService.findByIdIfExists(groupId);
 
         LocalDate startDate = group.getStartDate();
-        LocalDate finalOccurrenceDate = group.getFinalOccurrenceDate();
+        LocalDate finalOccurrenceDate = group.getEndDate();
 
-        Integer numberOfParticipants = group.getMembers().size();
+        int numberOfParticipants = group.getMembers().size();
 
         String destination = group.getDestination();
 
@@ -42,7 +42,7 @@ public class TripOpenAIService extends OpenAIService {
                 .replace("{destination}", destination)
                 .replace("{startDate}", startDate.toString())
                 .replace("{finalOccurrenceDate}", finalOccurrenceDate.toString())
-                .replace("{numberOfParticipants}", numberOfParticipants.toString());
+                .replace("{numberOfParticipants}", Integer.toString(numberOfParticipants));
     }
 
     @Override

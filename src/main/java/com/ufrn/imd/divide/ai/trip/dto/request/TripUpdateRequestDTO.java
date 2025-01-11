@@ -8,6 +8,15 @@ public class TripUpdateRequestDTO extends GroupUpdateRequestDTO {
 
     private LocalDate startDate;
     private String destination;
+    private LocalDate endDate;
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 
     public LocalDate getStartDate() {
         return startDate;

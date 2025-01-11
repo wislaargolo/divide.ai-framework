@@ -31,7 +31,6 @@ public abstract class Group extends BaseEntity {
 
     private boolean discontinued = false;
 
-    private LocalDate finalOccurrenceDate;
 
     public String getName() {
         return name;
@@ -81,11 +80,4 @@ public abstract class Group extends BaseEntity {
         this.discontinued = discontinued;
     }
 
-    public LocalDate getFinalOccurrenceDate() {
-        return finalOccurrenceDate;
-    }
-
-    public void setFinalOccurrenceDate(LocalDate finalOccurrenceDate) {
-        this.finalOccurrenceDate = finalOccurrenceDate;
-    }
 }

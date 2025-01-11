@@ -12,7 +12,6 @@ public class GroupResponseDTO {
     private List<UserResponseDTO> members;
     private UserResponseDTO createdBy;
     private boolean discontinued;
-    private LocalDate finalOccurrenceDate;
 
     public GroupResponseDTO() {}
 
@@ -77,11 +76,4 @@ public class GroupResponseDTO {
         this.discontinued = discontinued;
     }
 
-    public LocalDate getFinalOccurrenceDate() {
-        return finalOccurrenceDate;
-    }
-
-    public void setFinalOccurrenceDate(LocalDate finalOccurrenceDate) {
-        this.finalOccurrenceDate = finalOccurrenceDate;
-    }
 }

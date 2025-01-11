@@ -12,6 +12,16 @@ public class TripCreateRequestDTO extends GroupCreateRequestDTO {
     private LocalDate startDate;
     @NotBlank(message = "destination é obrigatório.")
     private String destination;
+    @NotNull(message = "endDate é obrigatório.")
+    private LocalDate endDate;
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 
     public LocalDate getStartDate() {
         return startDate;

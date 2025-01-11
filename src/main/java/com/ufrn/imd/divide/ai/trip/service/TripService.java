@@ -61,7 +61,7 @@ public class TripService extends GroupService<Trip, TripCreateRequestDTO, TripUp
             );
         }
 
-        if(trip.getFinalOccurrenceDate().isBefore(trip.getStartDate()))  {
+        if(trip.getEndDate().isBefore(trip.getStartDate()))  {
             throw new BusinessException(
                     "A data de início de uma viagem não pode ser posterior à data final.",
                     HttpStatus.BAD_REQUEST

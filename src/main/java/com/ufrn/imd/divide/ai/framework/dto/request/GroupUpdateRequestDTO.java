@@ -6,7 +6,6 @@ public class GroupUpdateRequestDTO {
 
     private String name;
     private String description;
-    private LocalDate finalOccurrenceDate;
 
     public String getName() {
         return name;
@@ -24,11 +23,4 @@ public class GroupUpdateRequestDTO {
         this.description = description;
     }
 
-    public LocalDate getFinalOccurrenceDate() {
-        return finalOccurrenceDate;
-    }
-
-    public void setFinalOccurrenceDate(LocalDate finalOccurrenceDate) {
-        this.finalOccurrenceDate = finalOccurrenceDate;
-    }
 }
