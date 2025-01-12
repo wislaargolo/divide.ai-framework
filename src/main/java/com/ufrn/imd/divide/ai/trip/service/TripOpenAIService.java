@@ -21,7 +21,7 @@ import java.time.LocalDate;
 
 @Profile("trip")
 @Service
-public class TripOpenAIService extends OpenAIService<Trip, TripRepository> {
+public class TripOpenAIService extends OpenAIService<Trip> {
 
     public TripOpenAIService(OpenAIClient openAIClient, ChatMapper chatMapper, OpenAIRepository openAIRepository, UserValidationService userValidationService, UserService userService, TripService tripService) {
         super(openAIClient, chatMapper, openAIRepository, userValidationService, userService, tripService);

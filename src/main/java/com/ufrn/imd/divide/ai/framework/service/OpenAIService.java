@@ -23,14 +23,14 @@ import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class OpenAIService<T extends Group, R extends GroupRepository<T>> {
+public abstract class OpenAIService<T extends Group> {
     protected OpenAIClient openAIClient;
     protected ChatMapper chatMapper;
     protected OpenAIRepository openAIRepository;
 
     private final UserValidationService userValidationService;
     private final UserService userService;
-    protected final GenericGroupService<T,R> groupService;
+    protected final GenericGroupService<T, ? extends GroupRepository<T>> groupService;
 
     protected String SYSTEM_PROMPT_FILE_PATH = "prompt/SystemPrompt.txt";
 
@@ -42,7 +42,7 @@ public abstract class OpenAIService<T extends Group, R extends GroupRepository<T
 
     public OpenAIService(OpenAIClient openAIClient, ChatMapper chatMapper, OpenAIRepository openAIRepository,
                          UserValidationService userValidationService, UserService userService,
-                         GenericGroupService<T,R> groupService)
+                         GenericGroupService<T, ? extends GroupRepository<T>> groupService)
     {
         this.openAIClient = openAIClient;
         this.chatMapper = chatMapper;
