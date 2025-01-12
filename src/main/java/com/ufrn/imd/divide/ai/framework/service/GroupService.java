@@ -6,6 +6,7 @@ import com.ufrn.imd.divide.ai.framework.dto.request.GroupUpdateRequestDTO;
 import com.ufrn.imd.divide.ai.framework.dto.request.JoinGroupRequestDTO;
 import com.ufrn.imd.divide.ai.framework.dto.response.GroupResponseDTO;
 import com.ufrn.imd.divide.ai.framework.exception.BusinessException;
+import com.ufrn.imd.divide.ai.framework.exception.ResourceNotFoundException;
 import com.ufrn.imd.divide.ai.framework.mapper.GroupMapper;
 import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
@@ -23,41 +24,38 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public abstract class GroupService<T extends Group,
+public abstract class GroupService<T extends Group, R extends GroupRepository<T>,
                           CRequestDTO extends GroupCreateRequestDTO,
                           URequestDTO extends GroupUpdateRequestDTO,
-                          ResponseDTO extends GroupResponseDTO> extends GenericGroupService<T> {
+                          ResponseDTO extends GroupResponseDTO> extends GenericGroupService<T, R> {
 
-    protected final GroupRepository<T> groupRepository;
     protected final GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper;
-    protected final UserService userService;
-    protected final UserValidationService userValidationService;
     protected final GroupTransactionRepository groupTransactionRepository;
     protected final GroupClosureStrategy<T> groupClosureStrategy;
 
-    protected GroupService(GroupRepository<T> groupRepository,
+    protected GroupService(R repository,
                            GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper,
                            UserService userService,
                            DebtService debtService,
                            UserValidationService userValidationService,
                            GroupTransactionRepository groupTransactionRepository,
                            GroupClosureStrategy<T> groupClosureStrategy) {
-        super(groupRepository, userService, debtService, userValidationService);
-        this.groupRepository = groupRepository;
+        super(repository, userService, debtService, userValidationService);
         this.groupMapper = groupMapper;
-        this.userService = userService;
-        this.userValidationService = userValidationService;
         this.groupTransactionRepository = groupTransactionRepository;
         this.groupClosureStrategy = groupClosureStrategy;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+
+    @Scheduled(cron = "* * * * * ?")
     public void checkDeleteGroup() {
-        List<T> groups = groupRepository.findAll();
+       System.out.println("Starting scheduled task: checkDeleteGroup");
+        List<T> groups = repository.findAll();
         for (T group : groups) {
             if (groupClosureStrategy.shouldCloseGroup(group)){
+                System.out.println("group : " + group.getName());
                 groupTransactionRepository.deleteAllByGroup(group);
-                groupRepository.delete(group);
+                repository.delete(group);
             }
         }
     }
@@ -70,7 +68,7 @@ public abstract class GroupService<T extends Group,
                 "Apenas o dono do grupo pode removê-lo.");
 
         groupTransactionRepository.deleteAllByGroup(group);
-        groupRepository.delete(group);
+        repository.delete(group);
     }
 
 
@@ -86,8 +84,7 @@ public abstract class GroupService<T extends Group,
         group.setMembers(new ArrayList<>());
         group.getMembers().add(group.getCreatedBy());
 
-
-        return groupMapper.toDto(groupRepository.save(group));
+        return groupMapper.toDto(repository.save(group));
     }
 
     public ResponseDTO update(Long groupId, URequestDTO dto) {
@@ -98,7 +95,7 @@ public abstract class GroupService<T extends Group,
 
         validateBeforeSave(group);
 
-        return groupMapper.toDto(groupRepository.save(group));
+        return groupMapper.toDto(repository.save(group));
     }
 
     private void validateUser(Long createdBy) {
@@ -108,7 +105,7 @@ public abstract class GroupService<T extends Group,
 
     public List<ResponseDTO> findAllByUserId(Long userId) {
         userService.findById(userId);
-        List<T> groups = groupRepository.findByMembersId(userId);
+        List<T> groups = repository.findByMembersId(userId);
 
         return groups.
                 stream().map(groupMapper::toDto)
@@ -129,7 +126,7 @@ public abstract class GroupService<T extends Group,
 
         group.getMembers().add(user);
 
-        return groupMapper.toDto(groupRepository.save(group));
+        return groupMapper.toDto(repository.save(group));
     }
 
     public ResponseDTO deleteMember(Long groupId, Long userId) {
@@ -138,7 +135,7 @@ public abstract class GroupService<T extends Group,
         validateBeforeDeleteMember(group, user);
 
         group.getMembers().remove(user);
-        return groupMapper.toDto(groupRepository.save(group));
+        return groupMapper.toDto(repository.save(group));
     }
 
     public ResponseDTO leaveGroup(Long groupId, Long userId) {
@@ -147,7 +144,7 @@ public abstract class GroupService<T extends Group,
         validateBeforeLeave(group, user);
 
         group.getMembers().remove(user);
-        return groupMapper.toDto(groupRepository.save(group));
+        return groupMapper.toDto(repository.save(group));
     }
 
     protected abstract void validateBeforeSave(T group);
@@ -212,7 +209,7 @@ public abstract class GroupService<T extends Group,
         do {
             String uuid = UUID.randomUUID().toString();
             code = uuid.substring(0, 6);
-        } while (groupRepository.existsByCode(code));
+        } while (repository.existsByCode(code));
         return code;
     }
 

@@ -1,8 +1,7 @@
 package com.ufrn.imd.divide.ai.reform.model;
 
 import com.ufrn.imd.divide.ai.framework.model.Group;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
@@ -10,8 +9,14 @@ import java.time.LocalDate;
 @Table(name = "reforms")
 public class Reform extends Group {
 
+    @Column(nullable = false)
     private String local;
-    private LocalDate startDate;
+    @Column(nullable = false)
+    private Double area;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReformPriority priority;
 
     public String getLocal() {
         return local;
@@ -21,11 +26,19 @@ public class Reform extends Group {
         this.local = local;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
+    public Double getArea() {
+        return area;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+    public void setArea(Double area) {
+        this.area = area;
+    }
+
+    public ReformPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(ReformPriority priority) {
+        this.priority = priority;
     }
 }

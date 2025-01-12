@@ -5,19 +5,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TripCreateRequestDTO extends GroupCreateRequestDTO {
 
     @NotBlank(message = "destination é obrigatório.")
     private String destination;
     @NotNull(message = "endDate é obrigatório.")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

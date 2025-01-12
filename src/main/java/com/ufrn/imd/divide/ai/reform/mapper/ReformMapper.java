@@ -20,8 +20,9 @@ public class ReformMapper extends GroupMapper<Reform, ReformCreateRequestDTO, Re
             return null;
         }
         Reform reform = mapCreateFields(new Reform(), groupCreateRequestDTO);
-        reform.setStartDate(groupCreateRequestDTO.getStartDate());
+        reform.setArea(groupCreateRequestDTO.getArea());
         reform.setLocal(groupCreateRequestDTO.getLocal());
+        reform.setPriority(groupCreateRequestDTO.getPriority());
         return reform;
     }
 
@@ -31,8 +32,9 @@ public class ReformMapper extends GroupMapper<Reform, ReformCreateRequestDTO, Re
             return null;
         }
         Reform reform = mapUpdateFields(new Reform(), groupUpdateRequestDTO);
-        reform.setStartDate(groupUpdateRequestDTO.getStartDate());
+        reform.setArea(groupUpdateRequestDTO.getArea());
         reform.setLocal(groupUpdateRequestDTO.getLocal());
+        reform.setPriority(groupUpdateRequestDTO.getPriority());
         return reform;
     }
 
@@ -42,8 +44,9 @@ public class ReformMapper extends GroupMapper<Reform, ReformCreateRequestDTO, Re
             return null;
         }
         ReformResponseDTO response = mapCommonGroupFields(group, new ReformResponseDTO());
-        response.setStartDate(group.getStartDate());
+        response.setArea(group.getArea());
         response.setLocal(group.getLocal());
+        response.setPriority(group.getPriority().getDescription());
         return response;
     }
 }

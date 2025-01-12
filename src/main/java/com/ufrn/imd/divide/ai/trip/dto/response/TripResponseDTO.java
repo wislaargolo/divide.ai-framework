@@ -3,11 +3,12 @@ package com.ufrn.imd.divide.ai.trip.dto.response;
 import com.ufrn.imd.divide.ai.framework.dto.response.GroupResponseDTO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TripResponseDTO extends GroupResponseDTO {
 
     private String destination;
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     public TripResponseDTO() {}
 
@@ -15,11 +16,11 @@ public class TripResponseDTO extends GroupResponseDTO {
         super(id, name);
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

@@ -3,17 +3,18 @@ package com.ufrn.imd.divide.ai.trip.dto.request;
 import com.ufrn.imd.divide.ai.framework.dto.request.GroupUpdateRequestDTO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TripUpdateRequestDTO extends GroupUpdateRequestDTO {
 
     private String destination;
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class GroupCreateRequestDTO {
 
@@ -13,7 +14,7 @@ public class GroupCreateRequestDTO {
         @NotNull(message = "createdBy é obrigatório.")
         private Long createdBy;
         @NotNull(message = "occurrenceDate é obrigatório.")
-        private LocalDate occurrenceDate;
+        private LocalDateTime occurrenceDate;
 
         public String getName() {
                 return name;
@@ -39,11 +40,11 @@ public class GroupCreateRequestDTO {
                 this.description = description;
         }
 
-        public LocalDate getOccurrenceDate() {
+        public LocalDateTime getOccurrenceDate() {
                 return occurrenceDate;
         }
 
-        public void setOccurrenceDate(LocalDate occurrenceDate) {this.occurrenceDate = occurrenceDate;}
+        public void setOccurrenceDate(LocalDateTime occurrenceDate) {this.occurrenceDate = occurrenceDate;}
 
 }
 

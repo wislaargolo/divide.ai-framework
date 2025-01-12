@@ -14,6 +14,7 @@ import com.ufrn.imd.divide.ai.framework.mapper.ChatMapper;
 import com.ufrn.imd.divide.ai.framework.model.Chat;
 import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
+import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
 import com.ufrn.imd.divide.ai.framework.repository.OpenAIRepository;
 import com.ufrn.imd.divide.ai.framework.util.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,14 +23,14 @@ import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class OpenAIService {
+public abstract class OpenAIService<T extends Group, R extends GroupRepository<T>> {
     protected OpenAIClient openAIClient;
     protected ChatMapper chatMapper;
     protected OpenAIRepository openAIRepository;
 
     private final UserValidationService userValidationService;
     private final UserService userService;
-    private final GenericGroupService<Group> groupService;
+    protected final GenericGroupService<T,R> groupService;
 
     protected String SYSTEM_PROMPT_FILE_PATH = "prompt/SystemPrompt.txt";
 
@@ -41,7 +42,7 @@ public abstract class OpenAIService {
 
     public OpenAIService(OpenAIClient openAIClient, ChatMapper chatMapper, OpenAIRepository openAIRepository,
                          UserValidationService userValidationService, UserService userService,
-                         GenericGroupService<Group> groupService)
+                         GenericGroupService<T,R> groupService)
     {
         this.openAIClient = openAIClient;
         this.chatMapper = chatMapper;
@@ -58,9 +59,9 @@ public abstract class OpenAIService {
         userValidationService.validateUser(userId);
         User user = userService.findById(userId);
 
-        Group group = groupService.findByIdIfExists(groupId);
+        T group = groupService.findByIdIfExists(groupId);
 
-        String prompt = buildPrompt(chatRequestDTO);
+        String prompt = buildPrompt(chatRequestDTO, group);
 
         List<ChatRequestMessage> chatMessages = buildChatMessages(prompt);
 
@@ -97,7 +98,7 @@ public abstract class OpenAIService {
         openAIRepository.save(chat);
     }
 
-    protected abstract String buildPrompt(OpenAIRequestDTO chatRequestDTO) throws Exception;
+    protected abstract String buildPrompt(OpenAIRequestDTO chatRequestDTO, T group) throws Exception;
 
     protected ConfigOpenAIResponseDTO getConfig() {
         return new ConfigOpenAIResponseDTO(

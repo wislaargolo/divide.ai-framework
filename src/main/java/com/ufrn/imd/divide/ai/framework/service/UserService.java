@@ -8,10 +8,12 @@ import com.ufrn.imd.divide.ai.framework.exception.ResourceNotFoundException;
 import com.ufrn.imd.divide.ai.framework.mapper.UserMapper;
 import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
+import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
 import com.ufrn.imd.divide.ai.framework.repository.UserRepository;
 import com.ufrn.imd.divide.ai.framework.util.AttributeUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final UserValidationService userValidationService;
-    private final GenericGroupService<Group> groupService;
+    private final GenericGroupService<? extends Group, ? extends GroupRepository<? extends Group>> groupService;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        UserMapper userMapper,
                        UserValidationService userValidationService,
-                       GenericGroupService<Group> groupService) {
+                       GenericGroupService<? extends Group, ? extends GroupRepository<? extends Group>> groupService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;

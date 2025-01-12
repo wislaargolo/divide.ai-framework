@@ -1,8 +1,12 @@
 package com.ufrn.imd.divide.ai.framework.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GroupResponseDTO {
 
     private Long id;
@@ -12,7 +16,7 @@ public class GroupResponseDTO {
     private List<UserResponseDTO> members;
     private UserResponseDTO createdBy;
     private boolean discontinued;
-    private LocalDate occurrenceDate;
+    private LocalDateTime occurrenceDate;
 
     public GroupResponseDTO() {}
 
@@ -77,11 +81,11 @@ public class GroupResponseDTO {
         this.discontinued = discontinued;
     }
 
-    public LocalDate getOccurrenceDate() {
+    public LocalDateTime getOccurrenceDate() {
         return occurrenceDate;
     }
 
-    public void setOccurrenceDate(LocalDate occurrenceDate) {
+    public void setOccurrenceDate(LocalDateTime occurrenceDate) {
         this.occurrenceDate = occurrenceDate;
     }
 }

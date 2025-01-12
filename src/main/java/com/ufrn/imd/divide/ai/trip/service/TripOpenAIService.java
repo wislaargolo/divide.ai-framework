@@ -12,27 +12,26 @@ import com.ufrn.imd.divide.ai.framework.service.UserService;
 import com.ufrn.imd.divide.ai.framework.service.UserValidationService;
 import com.ufrn.imd.divide.ai.trip.dto.response.TripOpenAIResponseDTO;
 import com.ufrn.imd.divide.ai.trip.model.Trip;
+import com.ufrn.imd.divide.ai.trip.repository.TripRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import com.ufrn.imd.divide.ai.framework.util.FileUtils;
 
 import java.time.LocalDate;
 
+@Profile("trip")
 @Service
-public class TripOpenAIService extends OpenAIService {
-    private final TripService tripService;
+public class TripOpenAIService extends OpenAIService<Trip, TripRepository> {
 
-    public TripOpenAIService(OpenAIClient openAIClient, ChatMapper chatMapper, OpenAIRepository openAIRepository, UserValidationService userValidationService, UserService userService, GenericGroupService<Group> groupService, TripService tripService) {
-        super(openAIClient, chatMapper, openAIRepository, userValidationService, userService, groupService);
-        this.tripService = tripService;
+    public TripOpenAIService(OpenAIClient openAIClient, ChatMapper chatMapper, OpenAIRepository openAIRepository, UserValidationService userValidationService, UserService userService, TripService tripService) {
+        super(openAIClient, chatMapper, openAIRepository, userValidationService, userService, tripService);
     }
 
     @Override
-    protected String buildPrompt(OpenAIRequestDTO chatRequestDTO) throws Exception {
-        Long groupId = chatRequestDTO.groupId();
-        Trip group = tripService.findByIdIfExists(groupId);
+    protected String buildPrompt(OpenAIRequestDTO chatRequestDTO, Trip group) throws Exception {
 
-        LocalDate startDate = group.getOccurrenceDate();
-        LocalDate finalOccurrenceDate = group.getEndDate();
+        LocalDate startDate = group.getOccurrenceDate().toLocalDate();
+        LocalDate finalOccurrenceDate = group.getEndDate().toLocalDate();
 
         int numberOfParticipants = group.getMembers().size();
 

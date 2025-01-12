@@ -11,6 +11,6 @@ public class DateEndStrategy implements GroupClosureStrategy<Trip> {
     @Override
     public boolean shouldCloseGroup(Trip group) {
         LocalDate now = LocalDate.now();
-        return now.isAfter(group.getEndDate());
+        return now.isAfter(group.getEndDate().toLocalDate());
     }
 }

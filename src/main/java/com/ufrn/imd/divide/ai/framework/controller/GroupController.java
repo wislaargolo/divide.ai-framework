@@ -6,6 +6,7 @@ import com.ufrn.imd.divide.ai.framework.dto.request.JoinGroupRequestDTO;
 import com.ufrn.imd.divide.ai.framework.dto.response.ApiResponseDTO;
 import com.ufrn.imd.divide.ai.framework.dto.response.GroupResponseDTO;
 import com.ufrn.imd.divide.ai.framework.model.Group;
+import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
 import com.ufrn.imd.divide.ai.framework.service.GroupService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ public class GroupController<T extends Group,
         URequestDTO extends GroupUpdateRequestDTO,
         ResponseDTO extends GroupResponseDTO> {
 
-    private final GroupService<T, CRequestDTO, URequestDTO, ResponseDTO> groupService;
+    private final GroupService<T,? extends GroupRepository<T>, CRequestDTO, URequestDTO, ResponseDTO> groupService;
 
-    public GroupController(GroupService<T, CRequestDTO, URequestDTO, ResponseDTO> groupService) {
+    public GroupController(GroupService<T, ? extends GroupRepository<T>, CRequestDTO, URequestDTO, ResponseDTO> groupService) {
         this.groupService = groupService;
     }
 

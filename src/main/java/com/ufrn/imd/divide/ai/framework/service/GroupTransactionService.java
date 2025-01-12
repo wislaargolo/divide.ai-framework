@@ -12,6 +12,7 @@ import com.ufrn.imd.divide.ai.framework.model.Debt;
 import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.GroupTransaction;
 import com.ufrn.imd.divide.ai.framework.model.User;
+import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
 import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
 import com.ufrn.imd.divide.ai.framework.util.AttributeUtils;
 import jakarta.transaction.Transactional;
@@ -28,7 +29,7 @@ public class GroupTransactionService {
 
     private final GroupTransactionRepository groupTransactionRepository;
     private final UserService userService;
-    private final GenericGroupService<Group> groupService;
+    private final GenericGroupService<? extends Group, ? extends GroupRepository<? extends Group>> groupService;
     private final GroupTransactionMapper groupTransactionMapper;
     private final UserValidationService userValidationService;
     private final DebtService debtService;
@@ -36,7 +37,7 @@ public class GroupTransactionService {
 
     public GroupTransactionService(GroupTransactionRepository groupTransactionRepository,
             UserService userService,
-            GenericGroupService<Group> groupService,
+            GenericGroupService<? extends Group, ? extends GroupRepository<? extends Group>> groupService,
             GroupTransactionMapper groupTransactionMapper,
             UserValidationService userValidationService,
             DebtService debtService,
@@ -72,7 +73,7 @@ public class GroupTransactionService {
 
     private void validateBeforeSave(GroupTransaction groupTransaction) {
         userValidationService.validateUser(groupTransaction.getCreatedBy().getId());
-        validateGroupDescontinued(groupTransaction);
+        validateGroupDiscontinued(groupTransaction);
 
         Double totalDebts = groupTransaction.getDebts().stream()
                 .mapToDouble(Debt::getAmount)
@@ -135,7 +136,7 @@ public class GroupTransactionService {
         userValidationService.validateUser(
                 groupTransaction.getCreatedBy().getId(),
                 "Apenas o dono da despesa em grupo pode alterá-la.");
-        validateGroupDescontinued(groupTransaction);
+        validateGroupDiscontinued(groupTransaction);
         validateDebtsList(groupTransaction.getDebts(), dto.debts());
 
         Double totalDebts = dto.debts().stream()
@@ -145,7 +146,7 @@ public class GroupTransactionService {
         validateTotalDebts(totalDebts, groupTransaction.getAmount());
     }
 
-    private void validateGroupDescontinued(GroupTransaction groupTransaction) {
+    private void validateGroupDiscontinued(GroupTransaction groupTransaction) {
         if(groupTransaction.getGroup().isDiscontinued()) {
             throw new BusinessException(
                     "Não é possível gerenciar despesas um grupo descontinuado.",

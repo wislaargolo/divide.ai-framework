@@ -9,40 +9,39 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class GenericGroupService<T extends Group> {
+public abstract class GenericGroupService<T extends Group, R extends GroupRepository<T>> {
 
-    protected final GroupRepository<T> groupRepository;
+    protected final R repository;
     protected final UserService userService;
     protected final DebtService debtService;
     protected final UserValidationService userValidationService;
 
-    protected GenericGroupService(GroupRepository<T> groupRepository,
+    protected GenericGroupService(R repository,
                                   @Lazy UserService userService,
                                   DebtService debtService,
                                   UserValidationService userValidationService) {
-        this.groupRepository = groupRepository;
+        this.repository = repository;
         this.userService = userService;
         this.debtService = debtService;
         this.userValidationService = userValidationService;
     }
 
     public T findByIdIfExists(Long groupId) {
-        return groupRepository.findById(groupId)
+        return repository.findById(groupId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Grupo de ID " + groupId + " não encontrado."
                 ));
     }
 
     public T findByCodeIfExists(String code) {
-        return groupRepository.findByCode(code)
+        return repository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Grupo com código " + code + " não encontrado."
                 ));
     }
 
     public void validateAndUpdateGroupsForUserDeletion(User user) {
-        List<T> groups = groupRepository.findByMembersId(user.getId());
+        List<T> groups = repository.findByMembersId(user.getId());
 
         for (T group : groups) {
             debtService.validateUserDebts(group, user);
@@ -52,7 +51,7 @@ public class GenericGroupService<T extends Group> {
             }
 
             group.getMembers().remove(user);
-            groupRepository.save(group);
+            repository.save(group);
 
         }
     }

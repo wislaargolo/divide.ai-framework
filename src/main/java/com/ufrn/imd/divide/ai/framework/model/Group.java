@@ -3,6 +3,7 @@ package com.ufrn.imd.divide.ai.framework.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity(name = "groups")
@@ -31,13 +32,14 @@ public abstract class Group extends BaseEntity {
 
     private boolean discontinued = false;
 
-    private LocalDate occurrenceDate;
+    @Column(nullable = false)
+    private LocalDateTime occurrenceDate;
 
-    public LocalDate getOccurrenceDate() {
+    public LocalDateTime getOccurrenceDate() {
         return occurrenceDate;
     }
 
-    public void setOccurrenceDate(LocalDate occurrenceDate) {
+    public void setOccurrenceDate(LocalDateTime occurrenceDate) {
         this.occurrenceDate = occurrenceDate;
     }
 
