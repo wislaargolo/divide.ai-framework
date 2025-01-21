@@ -47,13 +47,12 @@ public abstract class GroupService<T extends Group, R extends GroupRepository<T>
     }
 
 
-    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
     public void checkDeleteGroup() {
-       System.out.println("Starting scheduled task: checkDeleteGroup");
         List<T> groups = repository.findAll();
         for (T group : groups) {
             if (groupClosureStrategy.shouldCloseGroup(group)){
-                System.out.println("group : " + group.getName());
                 groupTransactionRepository.deleteAllByGroup(group);
                 repository.delete(group);
             }
