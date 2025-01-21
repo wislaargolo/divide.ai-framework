@@ -28,14 +28,14 @@ public class SportingOpenAIService extends OpenAIService<Sporting> {
         String sport = group.getSportingsModalities().getDescription() != null ? group.getSportingsModalities().getDescription() : "N/A";
         String dateTime = group.getOccurrenceDate().toString() != null ? group.getOccurrenceDate().toString() : "N/A";
         String descricao = group.getDescription() != null ? group.getDescription() : "N/A";
-        String quatidadeParticipantes = group.getMembers().toString() != null ? group.getMembers().toString() : "N/A";
+        Integer quatidadeParticipantes = group.getMembers().size() != 1 ? group.getMembers().size() : 1;
 
         return FileUtils.readSystemPromptFile("prompt/sport/Prompt.txt")
                 .replace("{local}", local)
                 .replace("{descricao}", descricao)
                 .replace("{sport}", sport)
                 .replace("{dateTime}", dateTime)
-                .replace("{quatidadeParticipantes}", quatidadeParticipantes);
+                .replace("{quatidadeParticipantes}", quatidadeParticipantes.toString());
     }
 
     @Override
