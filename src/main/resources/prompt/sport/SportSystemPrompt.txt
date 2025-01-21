@@ -15,7 +15,7 @@ Responda seguindo a estrutura JSON abaixo:
   "suggestions": [Lista de sugestões para o planejamento do evento, incluindo materiais necessários, organização e ideias para uma melhor experiência (type string)],
   "costEstimate": {
     "materials": [Estimativa de custos com materiais (type double)],
-    "extras": [Estimativa de custos com itens adicionais, como alimentação ou som (type double)],
+    "extras": [Estimativa de custos com itens adicionais, alimentação e bebida (type double)],
     "total": [Custo total estimado (type double)]
   },
   "tips": [Dicas para otimizar a organização, reduzir custos ou melhorar a experiência geral do evento esportivo (type string)]
