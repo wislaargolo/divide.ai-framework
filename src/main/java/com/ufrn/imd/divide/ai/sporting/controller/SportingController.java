@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Profile("sporting")
 @RestController
-@RequestMapping("/sporting")
+@RequestMapping("/sportings")
 public class SportingController extends GroupController<Sporting, SportingCreateRequestDTO, SportingUpdateRequestDTO, SportingResponseDTO> {
     public SportingController(SportingService sportingService) {
         super(sportingService);
