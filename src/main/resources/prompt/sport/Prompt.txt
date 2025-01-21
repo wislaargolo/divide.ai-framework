@@ -26,7 +26,7 @@ Responda seguindo a estrutura JSON abaixo:
     "local": [Local onde será realizada a atividade (type string)],
     "sport": [Esporte escolhido (type string)],
     "dateTime": [Data e hora do evento (type string)],
-    "participants": [Quantidade de participantes (type integer)]
+    "participants": [{quatidadeParticipantes}(type integer)]
   },
   "suggestions": [Lista de sugestões para o planejamento do evento, incluindo materiais necessários, organização e ideias para uma melhor experiência (type string)],
   "costEstimate": {
