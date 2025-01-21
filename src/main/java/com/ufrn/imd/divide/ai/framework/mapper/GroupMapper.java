@@ -5,6 +5,8 @@ import com.ufrn.imd.divide.ai.framework.dto.request.GroupUpdateRequestDTO;
 import com.ufrn.imd.divide.ai.framework.dto.response.GroupResponseDTO;
 import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
+import com.ufrn.imd.divide.ai.sporting.dto.response.SportingResponseDTO;
+import com.ufrn.imd.divide.ai.sporting.model.Sporting;
 
 public abstract class GroupMapper<T extends Group, CRequestDTO extends GroupCreateRequestDTO,
                              URequestDTO extends GroupUpdateRequestDTO,
@@ -49,4 +51,6 @@ public abstract class GroupMapper<T extends Group, CRequestDTO extends GroupCrea
         dto.setOccurrenceDate(group.getOccurrenceDate());
         return dto;
     }
+
+
 }

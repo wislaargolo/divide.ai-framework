@@ -1,0 +1,38 @@
+# Prompt para organização de esportes
+
+O usuário deseja organizar uma atividade esportiva no local: **{local}**, com o esporte escolhido sendo **{sport}**. A atividade está programada para a data e hora: **{dateTime}**, e contará com **{quatidadeParticipantes}** participantes. Abaixo está a descrição adicional fornecida pelo usuário, caso exista:
+
+**"{descricao}"**
+
+Com base nessas informações, forneça uma resposta estruturada e detalhada considerando:
+
+1. **Planejamento do evento:**
+   - Checklist dos materiais e equipamentos necessários para a prática do esporte escolhido.
+
+2. **Orçamento estimado:**
+   - Estimativa de custos com base nos materiais, itens adicionais, local e possíveis contratações (como árbitros, DJ, etc.).
+   - Etimativa de custos com alimentação/bebida com base na quantidade de pessoas, fornecendo a quantidade que em média cada pessoa irá consumir.
+
+3. **Dicas práticas:**
+   - Sugestões para criar uma experiência mais divertida e organizada.
+
+# Estrutura JSON de sua resposta obrigatória:
+Responda seguindo a estrutura JSON abaixo:
+
+```json
+{
+  "title": [Título do evento esportivo, ex.: "Futebol e Churrasco na PSG Academy" (type string)],
+  "sportDetails": {
+    "local": [Local onde será realizada a atividade (type string)],
+    "sport": [Esporte escolhido (type string)],
+    "dateTime": [Data e hora do evento (type string)],
+    "participants": [Quantidade de participantes (type integer)]
+  },
+  "suggestions": [Lista de sugestões para o planejamento do evento, incluindo materiais necessários, organização e ideias para uma melhor experiência (type string)],
+  "costEstimate": {
+    "materials": [Estimativa de custos com materiais (type double)],
+    "extras": [Estimativa de custos com itens adicionais, como alimentação ou som (type double)],
+    "total": [Custo total estimado (type double)]
+  },
+  "tips": [Dicas para otimizar a organização, reduzir custos ou melhorar a experiência geral do evento esportivo (type string)]
+}
