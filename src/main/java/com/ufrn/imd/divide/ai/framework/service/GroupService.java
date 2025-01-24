@@ -12,9 +12,11 @@ import com.ufrn.imd.divide.ai.framework.model.Group;
 import com.ufrn.imd.divide.ai.framework.model.User;
 import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
 import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
+import com.ufrn.imd.divide.ai.framework.repository.OpenAIRepository;
 import com.ufrn.imd.divide.ai.framework.util.AttributeUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,8 @@ public abstract class GroupService<T extends Group, R extends GroupRepository<T>
     protected final GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper;
     protected final GroupTransactionRepository groupTransactionRepository;
     protected final GroupClosureStrategy<T> groupClosureStrategy;
+    @Autowired
+    protected OpenAIRepository openAIRepository;
 
     protected GroupService(R repository,
                            GroupMapper<T, CRequestDTO, URequestDTO, ResponseDTO> groupMapper,
@@ -47,12 +51,13 @@ public abstract class GroupService<T extends Group, R extends GroupRepository<T>
     }
 
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 15 20 *  * ?")
     @Transactional
     public void checkDeleteGroup() {
         List<T> groups = repository.findAll();
         for (T group : groups) {
             if (groupClosureStrategy.shouldCloseGroup(group)){
+                openAIRepository.deleteAllByGroup(group);
                 groupTransactionRepository.deleteAllByGroup(group);
                 repository.delete(group);
             }
@@ -66,6 +71,7 @@ public abstract class GroupService<T extends Group, R extends GroupRepository<T>
         userValidationService.validateUser(group.getCreatedBy().getId(),
                 "Apenas o dono do grupo pode removê-lo.");
 
+        openAIRepository.deleteAllByGroup(group);
         groupTransactionRepository.deleteAllByGroup(group);
         repository.delete(group);
     }

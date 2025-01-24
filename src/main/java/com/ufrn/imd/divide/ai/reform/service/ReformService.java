@@ -3,6 +3,7 @@ package com.ufrn.imd.divide.ai.reform.service;
 import com.ufrn.imd.divide.ai.framework.exception.BusinessException;
 import com.ufrn.imd.divide.ai.framework.repository.GroupRepository;
 import com.ufrn.imd.divide.ai.framework.repository.GroupTransactionRepository;
+import com.ufrn.imd.divide.ai.framework.repository.OpenAIRepository;
 import com.ufrn.imd.divide.ai.framework.service.DebtService;
 import com.ufrn.imd.divide.ai.framework.service.GroupService;
 import com.ufrn.imd.divide.ai.framework.service.UserService;
@@ -32,7 +33,7 @@ public class ReformService extends GroupService<Reform, ReformRepository, Reform
                             @Lazy UserService userService,
                             DebtService debtService, UserValidationService userValidationService,
                             GroupTransactionRepository groupTransactionRepository,
-                            PaidExpensesStrategy paidExpensesStrategy, ReformRepository reformRepository) {
+                            PaidExpensesStrategy paidExpensesStrategy) {
         super(repository, reformMapper, userService, debtService, userValidationService, groupTransactionRepository, paidExpensesStrategy);
     }
 

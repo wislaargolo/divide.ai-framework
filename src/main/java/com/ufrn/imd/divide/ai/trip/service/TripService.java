@@ -33,7 +33,7 @@ public class TripService extends GroupService<Trip, TripRepository, TripCreateRe
                        @Lazy UserService userService, DebtService debtService,
                        UserValidationService userValidationService,
                        GroupTransactionRepository groupTransactionRepository,
-                       DateEndStrategy dateEndStrategy, TripRepository tripRepository) {
+                       DateEndStrategy dateEndStrategy) {
         super(repository, tripMapper, userService, debtService, userValidationService, groupTransactionRepository, dateEndStrategy);
     }
 
